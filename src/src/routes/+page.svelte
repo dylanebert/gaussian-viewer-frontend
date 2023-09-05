@@ -33,15 +33,12 @@
     });
 
     async function connectToPeer(sessionID) {
-        const iceServers = await fetch(
-            `${window.location.origin}/ice-servers`,
-            {
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-            }
-        ).then((response) => response.json());
+        const iceServers = await fetch(`http://54.174.13.59/ice-servers`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+            },
+        }).then((response) => response.json());
 
         var config = {
             iceServers: iceServers,
@@ -84,7 +81,7 @@
         console.log("Sending offer SDP: ", offer);
 
         const answer = await fetch(
-            `${window.location.origin}/offer?session_id=${sessionID}`,
+            `http://54.174.13.59/offer?session_id=${sessionID}`,
             {
                 method: "POST",
                 headers: {
