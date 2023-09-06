@@ -59,19 +59,11 @@
 
         pc = new RTCPeerConnection(config);
 
+        let iceCandidateBuffer = [];
+
         pc.onicecandidate = async ({ candidate }) => {
             if (candidate) {
-                console.log("Sending ICE candidate: ", candidate);
-                await fetch(
-                    `https://viewer.dylanebert.com/ice-candidate?session_id=${sessionID}`,
-                    {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json",
-                        },
-                        body: JSON.stringify(candidate),
-                    }
-                );
+                iceCandidateBuffer.push(candidate);
             }
         };
 
@@ -91,19 +83,6 @@
         console.log("Created offer:", offer);
 
         await pc.setLocalDescription(offer);
-
-        console.log("Waiting for ICE gathering to complete...");
-        await new Promise((resolve) => {
-            if (pc.iceGatheringState === "complete") {
-                resolve();
-            } else {
-                pc.onicegatheringstatechange = () => {
-                    if (pc.iceGatheringState === "complete") {
-                        resolve();
-                    }
-                };
-            }
-        });
 
         isLoading = false;
 
@@ -125,6 +104,25 @@
 
         console.log("Received answer SDP: ", answer);
         await pc.setRemoteDescription(answer);
+
+        iceCandidateBuffer.forEach(async (candidate) => {
+            await sendIceCandidate(candidate, sessionID);
+        });
+    }
+
+    async function sendIceCandidate(candidate, sessionID) {
+        const json = JSON.stringify(candidate);
+        console.log("Sending ICE candidate: ", json);
+        await fetch(
+            `https://viewer.dylanebert.com/ice-candidate?session_id=${sessionID}`,
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: json,
+            }
+        );
     }
 
     function throttle(func, delay) {
