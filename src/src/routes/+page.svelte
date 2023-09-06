@@ -20,8 +20,8 @@
 
     onMount(async () => {
         player = document.getElementById("player");
-        player.onerror = (error) => {
-            console.log("Error loading video:", error);
+        player.onerror = () => {
+            console.log("Error loading video");
         };
 
         // WebRTC setup
