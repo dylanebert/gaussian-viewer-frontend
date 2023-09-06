@@ -42,6 +42,7 @@
     });
 
     async function connectToPeer(sessionID) {
+        console.log("Requesting ICE servers...");
         const iceServers = await fetch(
             `https://viewer.dylanebert.com/ice-servers`,
             {
