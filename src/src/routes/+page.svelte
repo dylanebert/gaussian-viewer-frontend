@@ -9,6 +9,7 @@
     let dc;
     let throttleTimeout;
 
+    let isLoading = true;
     let isDragging = false;
     let xDeg = 30;
     let yDeg = 45;
@@ -24,6 +25,8 @@
         main.addEventListener("mousedown", () => (isDragging = true));
         main.addEventListener("mouseup", () => (isDragging = false));
         main.addEventListener("mousemove", handleMouseMove);
+
+        isLoading = false;
     });
 
     onDestroy(() => {
@@ -33,7 +36,7 @@
     });
 
     async function connectToPeer(sessionID) {
-        const iceServers = await fetch(`http://54.174.13.59/ice-servers`, {
+        const iceServers = await fetch(`https://viewer.dylanebert.com/ice-servers`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
@@ -78,10 +81,12 @@
             }
         });
 
+        isLoading = false;
+
         console.log("Sending offer SDP: ", offer);
 
         const answer = await fetch(
-            `http://54.174.13.59/offer?session_id=${sessionID}`,
+            `https://viewer.dylanebert.com/offer?session_id=${sessionID}`,
             {
                 method: "POST",
                 headers: {
@@ -153,7 +158,11 @@
 </script>
 
 <main>
-    <video id="player" src="" autoplay muted controls />
+    {#if isLoading}
+        <div>Loading...</div>
+    {:else}
+        <video id="player" src="" autoplay muted controls />
+    {/if}
 </main>
 
 <style>
@@ -169,5 +178,7 @@
         max-width: 1024px;
         width: 100%;
         height: auto;
+        display: block;
+        margin: 0 auto;
     }
 </style>
