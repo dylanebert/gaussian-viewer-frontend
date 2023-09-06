@@ -14,6 +14,8 @@
     let xDeg = 30;
     let yDeg = 45;
     let offset = [0, 0.5, 0];
+    let lastTouchX = 0;
+    let lastTouchY = 0;
 
     onMount(async () => {
         // WebRTC setup
@@ -25,6 +27,9 @@
         main.addEventListener("mousedown", () => (isDragging = true));
         main.addEventListener("mouseup", () => (isDragging = false));
         main.addEventListener("mousemove", handleMouseMove);
+        main.addEventListener("touchstart", handleTouchStart);
+        main.addEventListener("touchmove", handleTouchMove);
+        main.addEventListener("touchend", () => (isDragging = false));
 
         isLoading = false;
     });
@@ -36,12 +41,15 @@
     });
 
     async function connectToPeer(sessionID) {
-        const iceServers = await fetch(`https://viewer.dylanebert.com/ice-servers`, {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-            },
-        }).then((response) => response.json());
+        const iceServers = await fetch(
+            `https://viewer.dylanebert.com/ice-servers`,
+            {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            }
+        ).then((response) => response.json());
 
         var config = {
             iceServers: iceServers,
@@ -113,6 +121,25 @@
         }, delay);
     }
 
+    function handleTouchStart(event) {
+        isDragging = true;
+        const touch = event.touches[0];
+        lastTouchX = touch.clientX;
+        lastTouchY = touch.clientY;
+    }
+
+    function handleTouchMove(event) {
+        if (!isDragging) return;
+        const touch = event.touches[0];
+        const moveX = touch.clientX - lastTouchX;
+        const moveY = touch.clientY - lastTouchY;
+
+        lastTouchX = touch.clientX;
+        lastTouchY = touch.clientY;
+
+        updateCamera(moveX, moveY);
+    }
+
     function handleMouseMove(event) {
         if (!isDragging) return;
         const moveX =
@@ -120,6 +147,10 @@
         const moveY =
             event.movementY || event.mozMovementY || event.webkitMovementY || 0;
 
+        updateCamera(moveX, moveY);
+    }
+
+    function updateCamera(moveX, moveY) {
         yDeg -= moveX * 0.5;
         xDeg += moveY * 0.5;
 
