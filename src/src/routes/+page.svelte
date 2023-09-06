@@ -42,6 +42,16 @@
     });
 
     async function connectToPeer(sessionID) {
+        // Required to work on Safari
+        navigator.mediaDevices
+            .getUserMedia({ video: true })
+            .then((stream) => {
+                stream.getTracks().forEach((track) => track.stop());
+            })
+            .catch((error) => {
+                console.error(error);
+            });
+
         console.log("Requesting ICE servers...");
         const iceServers = await fetch(
             `https://viewer.dylanebert.com/ice-servers`,
