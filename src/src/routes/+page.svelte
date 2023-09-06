@@ -206,7 +206,7 @@
     {#if isLoading}
         <div>Loading...</div>
     {:else}
-        <video id="player" src="" autoplay muted controls />
+        <video id="player" src="" autoplay muted controls playsinline />
     {/if}
 </main>
 
@@ -216,14 +216,14 @@
         -webkit-user-drag: none;
         -moz-user-select: none;
         -ms-user-select: none;
+        max-width: 1024px;
+        width: 100%;
+        display: block;
+        margin: 0 auto;
     }
 
     #player {
         pointer-events: none;
-        max-width: 1024px;
         width: 100%;
-        height: auto;
-        display: block;
-        margin: 0 auto;
     }
 </style>
