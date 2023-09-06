@@ -59,6 +59,22 @@
 
         pc = new RTCPeerConnection(config);
 
+        pc.onicecandidate = async ({ candidate }) => {
+            if (candidate) {
+                console.log("Sending ICE candidate: ", candidate);
+                await fetch(
+                    `https://viewer.dylanebert.com/ice-candidate?session_id=${sessionID}`,
+                    {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify(candidate),
+                    }
+                );
+            }
+        };
+
         pc.ontrack = (event) => {
             console.log("Received track:", event);
             document.getElementById("player").srcObject = event.streams[0];
