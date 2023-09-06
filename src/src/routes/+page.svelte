@@ -8,6 +8,7 @@
     let pc;
     let dc;
     let throttleTimeout;
+    let player;
 
     let isLoading = true;
     let isDragging = false;
@@ -18,6 +19,11 @@
     let lastTouchY = 0;
 
     onMount(async () => {
+        player = document.getElementById("player");
+        player.onerror = (error) => {
+            console.log("Error loading video:", error);
+        };
+
         // WebRTC setup
         const sessionID = Math.random().toString(36).substring(2, 15);
         await connectToPeer(sessionID);
@@ -69,7 +75,7 @@
 
         pc.ontrack = (event) => {
             console.log("Received track:", event);
-            document.getElementById("player").srcObject = event.streams[0];
+            player.srcObject = event.streams[0];
         };
 
         dc = pc.createDataChannel("camera");
@@ -225,5 +231,6 @@
     #player {
         pointer-events: none;
         width: 100%;
+        height: auto;
     }
 </style>
