@@ -19,11 +19,6 @@
     let lastTouchY = 0;
 
     onMount(async () => {
-        player = document.getElementById("player");
-        player.onerror = () => {
-            console.log("Error loading video");
-        };
-
         // WebRTC setup
         const sessionID = Math.random().toString(36).substring(2, 15);
         await connectToPeer(sessionID);
@@ -75,6 +70,10 @@
 
         pc.ontrack = (event) => {
             console.log("Received track:", event);
+            player = document.getElementById("player");
+            player.onerror = (error) => {
+                console.error("Error: ", error);
+            };
             player.srcObject = event.streams[0];
         };
 
