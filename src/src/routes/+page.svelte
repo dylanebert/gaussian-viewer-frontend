@@ -143,6 +143,7 @@
     }
 
     function handleTouchStart(event) {
+        event.preventDefault();
         isDragging = true;
         const touch = event.touches[0];
         lastTouchX = touch.clientX;
@@ -150,6 +151,7 @@
     }
 
     function handleTouchMove(event) {
+        event.preventDefault();
         if (!isDragging) return;
         const touch = event.touches[0];
         const moveX = touch.clientX - lastTouchX;
